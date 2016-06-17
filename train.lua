@@ -5,6 +5,7 @@ require 'optim'
 require 'image'
 require 'cunn'
 require 'cudnn'
+local repl = require 'trepl'
 local c = require 'trepl.colorize'
 local json = require 'cjson'
 paths.dofile'augmentation.lua'
@@ -16,10 +17,10 @@ local iterm = require 'iterm'
 require 'iterm.dot'
 
 opt = {
-  dataset = './datasets/cifar10_whitened.t7',
+  dataset = './datasets/jl_cars.t7',
   save = 'logs',
-  batchSize = 128,
-  learningRate = 0.1,
+  batchSize = 32,
+  learningRate = 0.01,
   learningRateDecay = 0,
   learningRateDecayRatio = 0.2,
   weightDecay = 0.0005,
@@ -27,22 +28,22 @@ opt = {
   momentum = 0.9,
   epoch_step = "80",
   max_epoch = 300,
-  model = 'nin',
+  model = 'wide-resnet',
   optimMethod = 'sgd',
   init_value = 10,
-  depth = 50,
+  depth = 40,
   shortcutType = 'A',
   nesterov = false,
   dropout = 0,
   hflip = true,
-  randomcrop = 4,
+  randomcrop = 0,
   imageSize = 32,
   randomcrop_type = 'zero',
   cudnn_fastest = true,
   cudnn_deterministic = false,
   optnet_optimize = true,
   generate_graph = false,
-  multiply_input_factor = 1,
+  multiply_input_factor = 1.0/255,
   widen_factor = 1,
 }
 opt = xlua.envparams(opt)
@@ -57,6 +58,7 @@ opt.num_classes = provider.testData.labels:max()
 print(c.blue '==>' ..' configuring model')
 local model = nn.Sequential()
 local net = dofile('models/'..opt.model..'.lua'):cuda()
+--local net = torch.load('logs/wide-resnet_tmp/model.t7')
 do
    local function add(flag, module) if flag then model:add(module) end end
    add(opt.hflip, nn.BatchFlip():float())
@@ -77,7 +79,7 @@ do
    print(net)
    print('Network has', #model:findModules'cudnn.SpatialConvolution', 'convolutions')
 
-   local sample_input = torch.randn(8,3,opt.imageSize,opt.imageSize):cuda()
+   local sample_input = torch.randn(8,3,60,50):cuda()
    if opt.generate_graph then
       iterm.dot(graphgen(net, sample_input), opt.save..'/graph.pdf')
    end
@@ -175,6 +177,5 @@ for epoch=1,opt.max_epoch do
      train_time = train_time,
      test_time = test_time,
    }
+  torch.save(opt.save..'/model_'..epoch..'.t7', net:clearState())
 end
-
-torch.save(opt.save..'/model.t7', net:clearState())

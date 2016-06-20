@@ -5,6 +5,7 @@ require 'optim'
 require 'image'
 require 'cunn'
 require 'cudnn'
+local repl = require 'trepl'
 local c = require 'trepl.colorize'
 local json = require 'cjson'
 paths.dofile'augmentation.lua'
@@ -27,10 +28,10 @@ opt = {
   momentum = 0.9,
   epoch_step = "80",
   max_epoch = 300,
-  model = 'nin',
+  model = 'wide-resnet',
   optimMethod = 'sgd',
   init_value = 10,
-  depth = 50,
+  depth = 40,
   shortcutType = 'A',
   nesterov = false,
   dropout = 0,
@@ -175,6 +176,9 @@ for epoch=1,opt.max_epoch do
      train_time = train_time,
      test_time = test_time,
    }
+  if epoch % 10 == 0 then
+    torch.save(opt.save..'/model_'..epoch..'.t7', net:clearState())
+  end
 end
 
-torch.save(opt.save..'/model.t7', net:clearState())
+--torch.save(opt.save..'/model.t7', net:clearState())

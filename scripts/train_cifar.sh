@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export learningRate=0.1
+export learningRate=0.01
 export epoch_step="{60,120,160}"
 export max_epoch=200
 export learningRateDecay=0
@@ -10,6 +10,6 @@ export randomcrop_type=reflection
 
 # tee redirects stdout both to screen and to file
 # have to create folder for script and model beforehand
-export save=logs/${model}_${RANDOM}${RANDOM}
+export save=logs/${model}_tmp
 mkdir -p $save
 th train.lua | tee $save/log.txt

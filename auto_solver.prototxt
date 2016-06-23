@@ -1,0 +1,15 @@
+train_net: "auto_train.prototxt"
+test_net: "auto_test.prototxt"
+test_iter: 100
+test_interval: 500
+base_lr: 0.01
+momentum: 0.9
+weight_decay: 0.0001
+lr_policy: "step"
+gamma: 0.2
+stepsize: 50000
+display: 100
+max_iter: 100000
+snapshot: 50000
+snapshot_prefix: "wide_cifar"
+solver_mode: GPU

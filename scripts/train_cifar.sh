@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export learningRate=0.01
+export learningRate=0.1
 export epoch_step="{60,120,160}"
 export max_epoch=200
 export learningRateDecay=0

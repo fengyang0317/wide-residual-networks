@@ -29,7 +29,7 @@ ix = np.random.permutation(train_label.size)
 train_data = train_data[ix]
 train_label = train_label[ix]
 
-'''
+
 t_data = np.empty((train_label.size, 3, 40, 40), np.float64)
 t_data[:, :, 4:36, 4:36] = train_data
 t_data[:, :, :4, :4] = train_data[:, :, 4:0:-1, 4:0:-1]
@@ -41,7 +41,7 @@ t_data[:, :, :4, 4:36] = train_data[:, :, 4:0:-1, :]
 t_data[:, :, -4:, 4:36] = train_data[:, :, -2:-6:-1, :]
 t_data[:, :, 4:36, :4] = train_data[:, :, :, 4:0:-1]
 t_data[:, :, 4:36, -4:] = train_data[:, :, :, -2:-6:-1]
-'''
 
-writelmdb('wcifar_train', train_data, train_label)
+
+writelmdb('wcifar_train', t_data, train_label)
 writelmdb('wcifar_test', test_data, test_label)

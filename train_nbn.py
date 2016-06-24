@@ -16,18 +16,18 @@ bn_kwargs = {
 def wide_basic(net, from_layer, prefix, nInputPlane, nOutputPlane, stride):
     #assert from_layer in net.keys()
 
-    bn_branch2a_name = '{}_bn_branch2a'.format(prefix)
-    net[bn_branch2a_name] = L.BatchNorm(net[from_layer], in_place=True, **bn_kwargs)
+    #bn_branch2a_name = '{}_bn_branch2a'.format(prefix)
+    #net[bn_branch2a_name] = L.BatchNorm(net[from_layer], in_place=True, **bn_kwargs)
     relu_branch2a_name = '{}_relu_branch2a'.format(prefix)
-    net[relu_branch2a_name] = L.ReLU(net[bn_branch2a_name], in_place=True)
+    net[relu_branch2a_name] = L.ReLU(net[from_layer], in_place=True)
     branch2a_name = '{}_branch2a'.format(prefix)
     net[branch2a_name] = L.Convolution(net[relu_branch2a_name], num_output=nOutputPlane, kernel_size=3, pad=1,
                                        stride=stride, **c1_kwargs)
 
-    bn_branch2b_name = '{}_bn_branch2b'.format(prefix)
-    net[bn_branch2b_name] = L.BatchNorm(net[branch2a_name], in_place=True, **bn_kwargs)
+    #bn_branch2b_name = '{}_bn_branch2b'.format(prefix)
+    #net[bn_branch2b_name] = L.BatchNorm(net[branch2a_name], in_place=True, **bn_kwargs)
     relu_branch2b_name = '{}_relu_branch2b'.format(prefix)
-    net[relu_branch2b_name] = L.ReLU(net[bn_branch2b_name], in_place=True)
+    net[relu_branch2b_name] = L.ReLU(net[branch2a_name], in_place=True)
     branch2b_name = '{}_branch2b'.format(prefix)
     net[branch2b_name] = L.Convolution(net[relu_branch2b_name], num_output=nOutputPlane, kernel_size=3, pad=1,
                                        stride=1, **c1_kwargs)
@@ -60,8 +60,8 @@ def wide_resnet(lmdb, batch_size, num_class, depth = 10, widen_factor = 1, trans
     layer(net, 'conv1', 'res2a', nStages[0], nStages[1], n, 1)
     layer(net, 'res2a_{}'.format(n-1), 'res3a', nStages[1], nStages[2], n, 2)
     layer(net, 'res3a_{}'.format(n-1), 'res4a', nStages[2], nStages[3], n, 2)
-    net['bn'] = L.BatchNorm(net['res4a_{}'.format(n-1)], in_place=True, **bn_kwargs)
-    net['relu'] = L.ReLU(net['bn'], in_place=True)
+    #net['bn'] = L.BatchNorm(net[], in_place=True, **bn_kwargs)
+    net['relu'] = L.ReLU(net['res4a_{}'.format(n-1)], in_place=True)
     #net['pool'] = L.Pooling(net['relu'], pool=P.Pooling.AVE, global_pooling=True)
     net['pool'] = L.Pooling(net['relu'], pool=P.Pooling.AVE, kernel_size=8)
     net['fc'] = L.InnerProduct(net['pool'], num_output=num_class, weight_filler=dict(type='xavier'),
@@ -74,11 +74,11 @@ def wide_resnet(lmdb, batch_size, num_class, depth = 10, widen_factor = 1, trans
 with open('auto_train.prototxt', 'w') as f:
     train_transform_param = {
         'mirror': True,
-        'crop_size': 32
+        #'crop_size': 32
     }
-    f.write('name: "wide resnet"\n')
+    #f.write('name: "wide resnet"\n')
     f.write(str(wide_resnet('wcifar_train', 100, 10, transform_param=train_transform_param)))
 
 with open('auto_test.prototxt', 'w') as f:
-    f.write('name: "wide resnet"\n')
+    #f.write('name: "wide resnet"\n')
     f.write(str(wide_resnet('wcifar_test', 100, 10)))

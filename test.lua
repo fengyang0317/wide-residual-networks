@@ -18,19 +18,17 @@ local graphgen = require 'optnet.graphgen'
 local iterm = require 'iterm'
 require 'iterm.dot'
 
-net = torch.load('logs/wide-resnet_tmp/model.t7')
+net = torch.load('logs/wide-resnet_tmp/model_1.t7')
 net:evaluate()
 
-local im = cv.imread {'2012-12-12_12_30_08.jpg'}
+local im = cv.imread {'dump_output_018359.jpg'}
 
 im = cv.resize {im, {640, 360}}
 cv.imshow {'im', im}
 
 im = im:permute(3, 1, 2):type('torch.FloatTensor')
 
-im[{1,{},{}}]:add(-161.07047776)
-im[{2,{},{}}]:add(-166.17654151)
-im[{3,{},{}}]:add(-166.76638209)
+im:add(-111.88116755)
 
 im:div(255)
 
@@ -39,7 +37,8 @@ im = im:view(1, 3, im:size(2), im:size(3))
 --im = torch.randn(1, 3, 64, 32)
 
 print(im:size())
-net:add(nn.View(2, 75, 153):setNumInputDims(1):cuda())
+--net:add(nn.View(2, 75, 153):setNumInputDims(1):cuda())
+net:add(nn.View(2, 76, 148):setNumInputDims(1):cuda())
 --net:add(nn.SoftMax():cuda())
 
 
@@ -65,7 +64,7 @@ output = output:double()
 m1 = output[{1,1,{},{}}]
 m2 = output[{1,2,{},{}}]
 
---[[
+---[[
 m1 = torch.log(m1 - m1:min())
 m2 = torch.log(m2 - m2:min())
 m1 = m1 / m1:max()

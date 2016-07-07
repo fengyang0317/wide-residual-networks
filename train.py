@@ -3,9 +3,9 @@ from caffe import layers as L
 from caffe import params as P
 
 c1_kwargs = {
-    'param': [dict(lr_mult=1, decay_mult=1), dict(lr_mult=0, decay_mult=0)],
+    'param': [dict(lr_mult=1, decay_mult=1)],
     'weight_filler': dict(type='xavier'),
-    'bias_filler': dict(type='constant', value=0.0)
+    'bias_term': False,
 }
 bn_kwargs = {
     'param': [dict(lr_mult=0, decay_mult=0), dict(lr_mult=0, decay_mult=0), dict(lr_mult=0, decay_mult=0)],

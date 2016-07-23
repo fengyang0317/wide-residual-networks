@@ -97,10 +97,22 @@ local function createModel(opt)
       model:add(layer(wide_basic, nStages[2], nStages[3], n, 2)) -- Stage 2 (spatial size: 16x16)
       model:add(layer(wide_basic, nStages[3], nStages[4], n, 2)) -- Stage 3 (spatial size: 8x8)
       model:add(SBatchNorm(nStages[4]))
+      --[[
       model:add(ReLU(true))
       model:add(Avg(8, 8, 1, 1))
       model:add(nn.View(nStages[4]):setNumInputDims(3))
       model:add(nn.Linear(nStages[4], opt.num_classes))
+      --]]
+      ---[[
+      model:add(nn.ConcatTable():add(nn.AddConstant(1, true)):add(nn.AddConstant(-1, true)):add(nn.Identity()))
+      model:add(nn.JoinTable(2))
+      model:add(nn.Power(2))
+      model:add(nn.MulConstant(-1))
+      model:add(nn.Exp())
+      model:add(Avg(4,4,2,2))
+      model:add(nn.View(nStages[4] * 3 * 3 * 3):setNumInputDims(3))
+      model:add(nn.Linear(nStages[4] * 3 * 3 * 3, opt.num_classes))
+      --]]
    end
 
    utils.DisableBias(model)

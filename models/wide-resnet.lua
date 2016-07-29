@@ -109,9 +109,9 @@ local function createModel(opt)
       model:add(nn.Power(2))
       model:add(nn.MulConstant(-1))
       model:add(nn.Exp())
-      model:add(Avg(4,4,2,2))
-      model:add(nn.View(nStages[4] * 3 * 3 * 3):setNumInputDims(3))
-      model:add(nn.Linear(nStages[4] * 3 * 3 * 3, opt.num_classes))
+      model:add(Avg(8,8,1,1))
+      model:add(nn.View(nStages[4] * 3):setNumInputDims(3))
+      model:add(nn.Linear(nStages[4] * 3, opt.num_classes))
       --]]
    end
 
